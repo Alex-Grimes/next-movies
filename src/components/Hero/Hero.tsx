@@ -1,16 +1,18 @@
 import React from 'react'
 import Image from 'next/image'
-import "../Hero/Hero.scss"
+import hero from '../../assets/imgs/movieHero.jpg'
+import styles from '@/styles/Hero.module.scss'
+
 
 export const Hero = () => {
   return (
-    <div className="hero">
-    <Image src="../assets/imgs/movieHero.jpg" alt="An Image showing popcorn" />
-    <div className="text-container">
-        <div className="text">
-            <span className="mini-heading">Now Playing</span>
+    <div className={styles.hero}>
+    <Image src= {hero} alt="An Image showing popcorn"/>
+    <div className={styles.textcontainer}>
+        <div className={styles.text}>
+            <span className={styles.miniheading}>Now Playing</span>
             <h1><span>Now</span> Playing</h1>
-            <a href="#movie-grid" className="button">View Movies</a>
+            <a href="#movie-grid" className={styles.button}>View Movies</a>
         </div>
     </div>
 </div>
