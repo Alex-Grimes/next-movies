@@ -16,7 +16,7 @@ export default function Home() {
   let searchedMovies = [];
   const [searchInput, setsearchInput] = useState('')
   const [search, setSearch] = useState('')
-  const [isLoading, setisLoading] = useState(true)
+  const [isLoading, setisLoading] = useState(false)
 
   async function getMovies() {
     setisLoading(true)
@@ -25,7 +25,7 @@ export default function Home() {
     if(result){
       setisLoading(false);
     }
-    result.data.resultrs.forEach((movie: any) => {
+    result.data.results.forEach((movie: any) => {
       movies.push(movie);
     });
   }
@@ -53,10 +53,16 @@ export default function Home() {
 
   const handleKeyUp = (event: { key: string }) => {
     if (event.key === 'Enter') {
-      // 👇 Get input value
+      
       setsearchInput(search);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      getMovies()
+    };
+  }, [])
 
 
 
@@ -71,6 +77,14 @@ export default function Home() {
       { isLoading &&
         <Loading />
       }
+      <div className={`${styles.container} ${styles.movies}`}>
+        { searchInput !== '' &&
+          <div className={styles.moviesgrid} id='movies-grid'>
+
+          </div>
+        
+        }
+      </div>
     </div>
     </>
   )
