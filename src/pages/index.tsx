@@ -3,7 +3,7 @@ import { Loading } from '@/components/Loading/Loading'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
 import { Hero } from '@/components/Hero/Hero'
-import { useState,useEffect } from 'react'
+import { useState,useEffect, KeyboardEvent, SetStateAction } from 'react'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -15,6 +15,7 @@ export default function Home() {
   let movies = [];
   let searchedMovies = [];
   const [searchInput, setsearchInput] = useState('')
+  const [search, setSearch] = useState('')
   const [isLoading, setisLoading] = useState(true)
 
   async function getMovies() {
@@ -46,6 +47,17 @@ export default function Home() {
     searchedMovies = [];
   }
 
+  const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
+    setSearch(event.target.value);
+  };
+
+  const handleKeyUp = (event: { key: string }) => {
+    if (event.key === 'Enter') {
+      // 👇 Get input value
+      setsearchInput(search);
+    }
+  };
+
 
 
   return (
@@ -53,7 +65,7 @@ export default function Home() {
     <div className={styles.home}>
       <Hero /> 
       <div className={`${styles.container} ${styles.search}`}>
-        <input type="text" placeholder="Search" value={searchInput}/>
+        <input type="text" placeholder="Search" onChange={handleChange} onKeyUp={handleKeyUp}/>
         <button className='button' onClick={clearSearch}>Clear Search</button>
       </div>
       { isLoading &&
