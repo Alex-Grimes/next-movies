@@ -12,8 +12,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
-  let movies = [];
-  let searchedMovies = [];
+  let movies: any[] = [];
+  let searchedMovies: [];
   const [searchInput, setsearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [isLoading, setisLoading] = useState(false)
@@ -56,13 +56,27 @@ export default function Home() {
       
       setsearchInput(search);
     }
+
   };
 
   useEffect(() => {
     return () => {
-      getMovies()
+      getMovies();
+
     };
   }, [])
+
+
+  const renderMovies = (movies:any) => {
+    return movies.map((movie:any, index:number) => {
+      {console.log(movie)}
+      <div className={styles.movieImg}>
+      <img src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="Movie Poster" />
+      <p key={index} className={styles.review}>{movie.vote_average}</p>
+      <p key={index} className={styles.overview}>{movie.overview}</p>
+    </div>
+    })
+  }
 
 
 
@@ -78,12 +92,11 @@ export default function Home() {
         <Loading />
       }
       <div className={`${styles.container} ${styles.movies}`}>
-        { searchInput !== '' &&
           <div className={styles.moviesgrid} id='movies-grid'>
-
-          </div>
+              {renderMovies(movies)}
+            </div>
+          
         
-        }
       </div>
     </div>
     </>
