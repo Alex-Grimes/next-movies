@@ -6,6 +6,7 @@ import { Hero } from '@/components/Hero/Hero'
 import { useState,useEffect, KeyboardEvent, SetStateAction } from 'react'
 import { useQuery } from 'react-query'
 import Image from 'next/image'
+import Link from 'next/link'
 
 
 
@@ -60,16 +61,22 @@ export default function Home() {
     return data.results.map((movie: any, index: number) => {
       return (
       <div key={index} className={styles.movieImg}>
-        <Image  loader={imageLoader} src={movie.poster_path} alt="Movie Poster" height={400} width={400} />
-        <p className={styles.review}>{movie.vote_average}</p>
-        <p className={styles.overview}>{movie.overview}</p>
+        <Link href={{
+          pathname: "movies/[movieid]",
+          query: {movieid: movie.id},
+          }}>        
+          <Image  loader={imageLoader} src={movie.poster_path} alt="Movie Poster" height={400} width={400} />
+          <p className={styles.review}>{movie.vote_average}</p>
+          <p className={styles.overview}>{movie.overview}</p>
+        </Link>
+
       </div>
     
     )})}
   }
 
   function SearchedRenderMovies() {
-    const {data, isError, isLoading} = useQuery('movies', getMovies)
+    const {data, isError, isLoading} = useQuery('movies', searchMovies)
     if(isLoading){
       return <Loading/>
     }
@@ -95,7 +102,7 @@ export default function Home() {
     <div className={styles.home}>
       <Hero /> 
       <div className={`${styles.container} ${styles.search}`}>
-        <input type="text" placeholder="Search" onChange={handleChange} onKeyUp={handleKeyUp}/>
+        <input type="text" placeholder="Search" onChange={handleChange} onKeyDown={handleKeyUp}/>
         <button className='button' onClick={clearSearch}>Clear Search</button>
       </div>
       { isLoading &&
@@ -118,3 +125,5 @@ export default function Home() {
     </>
   )
 }
+
+
