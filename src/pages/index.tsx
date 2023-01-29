@@ -13,7 +13,6 @@ import Image from 'next/image'
 
 export default function Home() {
 
-  let searchedMovies: [];
   const [searchInput, setsearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [isLoading, setisLoading] = useState(false)
@@ -23,10 +22,14 @@ export default function Home() {
     return data
   }
 
+  async function searchMovies() {
+    const {data} = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=332bbed1717d46c67174b3e563235770&language=en-US&page=1&query=${searchInput}`);
+    return data
+  }
+
 
   function clearSearch() {
     setsearchInput('');
-    searchedMovies = [];
   }
 
   const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
@@ -65,6 +68,26 @@ export default function Home() {
     )})}
   }
 
+  function SearchedRenderMovies() {
+    const {data, isError, isLoading} = useQuery('movies', getMovies)
+    if(isLoading){
+      return <Loading/>
+    }
+    if(isError){
+      return <div>Error!</div>
+  }
+  if(data){
+    return data.results.map((movie: any, index: number) => {
+      return (
+      <div key={index} className={styles.movieImg}>
+        <Image  loader={imageLoader} src={movie.poster_path} alt="Movie Poster" height={400} width={400} />
+        <p className={styles.review}>{movie.vote_average}</p>
+        <p className={styles.overview}>{movie.overview}</p>
+      </div>
+    
+    )})}
+  }
+
 
 
   return (
@@ -80,7 +103,13 @@ export default function Home() {
       }
       <div className={`${styles.container} ${styles.movies}`}>
           <div className={styles.moviesgrid} id='movies-grid'>
-              {RenderMovies()}
+            { searchInput !== '' &&
+              SearchedRenderMovies()
+            }
+            { searchInput === '' &&
+              
+              RenderMovies()
+            }
             </div>
           
         
