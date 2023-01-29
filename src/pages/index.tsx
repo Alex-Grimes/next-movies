@@ -4,43 +4,25 @@ import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
 import { Hero } from '@/components/Hero/Hero'
 import { useState,useEffect, KeyboardEvent, SetStateAction } from 'react'
+import { useQuery } from 'react-query'
+import Image from 'next/image'
 
 
-const inter = Inter({ subsets: ['latin'] })
 
 
 
 export default function Home() {
 
-  let movies: any[] = [];
   let searchedMovies: [];
   const [searchInput, setsearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [isLoading, setisLoading] = useState(false)
 
   async function getMovies() {
-    setisLoading(true)
-    const data = axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=332bbed1717d46c67174b3e563235770&language=en-US&page=1`);
-    const result = await data;
-    if(result){
-      setisLoading(false);
-    }
-    result.data.results.forEach((movie: any) => {
-      movies.push(movie);
-    });
+    const {data} = await axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=332bbed1717d46c67174b3e563235770&language=en-US&page=1`);
+    return data
   }
 
-  async function searchMovies() {
-    setisLoading(true);
-    const data = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=332bbed1717d46c67174b3e563235770&language=en-US&page=1&query=${searchInput}`);
-    const result = await data;
-    if(result){
-      setisLoading(false);
-    }
-    result.data.results.forEach((movie: any) => {
-      searchedMovies.push(movie);
-    })
-  }
 
   function clearSearch() {
     setsearchInput('');
@@ -59,23 +41,28 @@ export default function Home() {
 
   };
 
-  useEffect(() => {
-    return () => {
-      getMovies();
+  function imageLoader({ src, width, quality}: any){
+    return `https://image.tmdb.org/t/p/w500/${src}?w=${width}&q=${quality || 75}`
+  }
 
-    };
-  }, [])
-
-
-  const renderMovies = (movies:any) => {
-    return movies.map((movie:any, index:number) => {
-      {console.log(movie)}
-      <div className={styles.movieImg}>
-      <img src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="Movie Poster" />
-      <p key={index} className={styles.review}>{movie.vote_average}</p>
-      <p key={index} className={styles.overview}>{movie.overview}</p>
-    </div>
-    })
+  function RenderMovies() {
+    const {data, isError, isLoading} = useQuery('movies', getMovies)
+    if(isLoading){
+      return <Loading/>
+    }
+    if(isError){
+      return <div>Error!</div>
+  }
+  if(data){
+    return data.results.map((movie: any, index: number) => {
+      return (
+      <div key={index} className={styles.movieImg}>
+        <Image  loader={imageLoader} src={movie.poster_path} alt="Movie Poster" height={400} width={400} />
+        <p className={styles.review}>{movie.vote_average}</p>
+        <p className={styles.overview}>{movie.overview}</p>
+      </div>
+    
+    )})}
   }
 
 
@@ -93,7 +80,7 @@ export default function Home() {
       }
       <div className={`${styles.container} ${styles.movies}`}>
           <div className={styles.moviesgrid} id='movies-grid'>
-              {renderMovies(movies)}
+              {RenderMovies()}
             </div>
           
         
